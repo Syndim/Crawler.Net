@@ -1,0 +1,17 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: |
+    git checkout master
+    git push -f https://syndim:$(GITHUB_TOKEN)@github.com/Syndim/Crawler.Net.git --all
+  displayName: 'Mirror'
+

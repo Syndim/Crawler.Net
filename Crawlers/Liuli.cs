@@ -124,7 +124,7 @@ internal class Liuli
         var imageTags = contentTag.QuerySelectorAll("img");
         string cover = string.Empty;
         bool isFirst = true;
-        bool tooManyRequestsOccured = false;
+        bool networkErrorsOccured = false;
         Dictionary<string, string> images = new();
         if (imageTags == null)
         {
@@ -184,19 +184,20 @@ internal class Liuli
                 catch (HttpRequestException e)
                 {
                     Console.WriteLine($"Failed to get image({url}): {e.Message}");
-                    if (e.StatusCode == HttpStatusCode.TooManyRequests)
+                    if (e.StatusCode != HttpStatusCode.NotFound)
                     {
-                        tooManyRequestsOccured = true;
+                        networkErrorsOccured = true;
                     }
                 }
                 catch (Exception e)
                 {
+                    networkErrorsOccured = true;
                     Console.WriteLine($"Failed to get image({url}): {e.Message}");
                 }
             }
         }
 
-        if (tooManyRequestsOccured)
+        if (networkErrorsOccured)
         {
             Console.WriteLine($"Has too many requests error, skipping further parsing {page.Uri.ToString()}");
             return;

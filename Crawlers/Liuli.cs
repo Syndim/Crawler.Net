@@ -209,7 +209,7 @@ internal class Liuli
                 catch (HttpRequestException e)
                 {
                     Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
-                    if (e.StatusCode != HttpStatusCode.NotFound)
+                    if (e.StatusCode != HttpStatusCode.NotFound && !(e.StatusCode == HttpStatusCode.ServiceUnavailable && !string.IsNullOrEmpty(_args.Proxy)))
                     {
                         networkErrorsOccured = true;
                     }
@@ -314,7 +314,7 @@ internal class Liuli
         var articleIdMatch = ArticleIdRegex.Match(uri.PathAndQuery);
         if (articleIdMatch == null || articleIdMatch.Groups.Count < 2)
         {
-            Console.WriteLine($"Failed to parse id url: {uri}");
+            // Console.WriteLine($"Failed to parse id url: {uri}");
             return false;
         }
 

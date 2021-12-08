@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -75,6 +76,7 @@ internal class Liuli
 
         if (!TryGetArticleIdFromUrl(page.Uri, out int articleId))
         {
+            Console.WriteLine($"skip {page.Uri.ToString()}");
             return;
         }
 
@@ -122,6 +124,7 @@ internal class Liuli
         var imageTags = contentTag.QuerySelectorAll("img");
         string cover = string.Empty;
         bool isFirst = true;
+        bool tooManyRequestsOccured = false;
         Dictionary<string, string> images = new();
         if (imageTags == null)
         {
@@ -140,6 +143,22 @@ internal class Liuli
 
                 try
                 {
+                    var fileName = CreateMD5Hash(url);
+                    var extension = Path.GetExtension(url);
+                    var fullFileName = $"{fileName}{extension}";
+                    var imgFilePath = Path.Combine(path, fullFileName);
+                    if (File.Exists(imgFilePath))
+                    {
+                        var fileInfo = new FileInfo(imgFilePath);
+                        if (fileInfo.Length > 0)
+                        {
+                            Console.WriteLine($"Image file already exists for url({url}): {fullFileName}, file size: {fileInfo.Length}");
+                            images.Add(url, fullFileName);
+                            continue;
+                        }
+                    }
+
+                    await Task.Delay(TimeSpan.FromSeconds(1));
                     if (url.StartsWith("/"))
                     {
                         var urlBuilder = new UriBuilder(page.Uri);
@@ -149,10 +168,6 @@ internal class Liuli
                     }
 
                     var stream = await _client.GetStreamAsync(url);
-                    var extension = Path.GetExtension(url);
-                    var fileName = CreateMD5Hash(url);
-                    var fullFileName = $"{fileName}{extension}";
-                    var imgFilePath = Path.Combine(path, fullFileName);
                     var imgFile = File.Create(imgFilePath);
                     if (imgFile != null)
                     {
@@ -166,11 +181,25 @@ internal class Liuli
                         isFirst = false;
                     }
                 }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine($"Failed to get image({url}): {e.Message}");
+                    if (e.StatusCode == HttpStatusCode.TooManyRequests)
+                    {
+                        tooManyRequestsOccured = true;
+                    }
+                }
                 catch (Exception e)
                 {
                     Console.WriteLine($"Failed to get image({url}): {e.Message}");
                 }
             }
+        }
+
+        if (tooManyRequestsOccured)
+        {
+            Console.WriteLine($"Has too many requests error, skipping further parsing {page.Uri.ToString()}");
+            return;
         }
 
         var dateElement = document.QuerySelector("time.entry-date");
@@ -258,14 +287,14 @@ internal class Liuli
         var articleIdMatch = ArticleIdRegex.Match(uri.PathAndQuery);
         if (articleIdMatch == null || articleIdMatch.Groups.Count < 2)
         {
-            Console.WriteLine($"Failed to parse id url: {uri}, skip");
+            Console.WriteLine($"Failed to parse id url: {uri}");
             return false;
         }
 
         var articleIdString = articleIdMatch.Groups[1];
         if (!int.TryParse(articleIdString.Value, out articleId))
         {
-            Console.WriteLine($"Failed to parse id from article tag: {articleIdString}, skip");
+            Console.WriteLine($"Failed to parse id from article tag: {articleIdString}");
             return false;
         }
 

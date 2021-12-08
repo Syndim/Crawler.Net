@@ -169,7 +169,7 @@ internal class Liuli
                     if (File.Exists(imgFilePath))
                     {
                         var fileInfo = new FileInfo(imgFilePath);
-                        if (fileInfo.Length > 0)
+                        if (fileInfo.Length > 0 && !images.ContainsKey(url))
                         {
                             Console.WriteLine($"Image file already exists for url({url}): {fullFileName}, file size: {fileInfo.Length}, page url: {pageUrl}");
                             images.Add(url, fullFileName);
@@ -194,7 +194,7 @@ internal class Liuli
 
                     var stream = await _client.GetStreamAsync(url);
                     var imgFile = File.Create(imgFilePath);
-                    if (imgFile != null)
+                    if (imgFile != null && !images.ContainsKey(url))
                     {
                         await stream.CopyToAsync(imgFile);
                         images.Add(url, fullFileName);

@@ -30,7 +30,7 @@ internal class PageData
 
 internal class Liuli
 {
-    private static readonly Regex ArticleIdRegex = new Regex(@".*?(\d+)\.html");
+    private static readonly Regex ArticleIdRegex = new Regex(@".*?/wp/(\d+).*");
     private readonly LiuliArgs _args;
     private readonly string _authority;
     private readonly HttpClient _client = new HttpClient();

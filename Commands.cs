@@ -43,7 +43,7 @@ internal class LiuliArgs : ICommandProperty
             {
                 IsRequired = true
             },
-            new Option<string>(new string[] { "-h", "--proxy" }, "Proxy used for fetching images")
+            new Option<string>(new string[] { "-r", "--proxy" }, "Proxy used for fetching images")
         };
 
         var command = new Command("liuli", "Fetch Liuli pages")

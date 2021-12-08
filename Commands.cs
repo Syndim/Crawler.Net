@@ -28,6 +28,8 @@ internal class LiuliArgs : ICommandProperty
     public string? Url { get; set; }
 
     public string? Path { get; set; }
+ 
+    public string? Proxy { get; set; }
 
     public void AddToCommand(Command c)
     {
@@ -40,7 +42,8 @@ internal class LiuliArgs : ICommandProperty
             new Option<string>(new string[] { "-p", "--path" }, "Path to save the result")
             {
                 IsRequired = true
-            }
+            },
+            new Option<string>(new string[] { "-h", "--proxy" }, "Proxy used for fetching images")
         };
 
         var command = new Command("liuli", "Fetch Liuli pages")

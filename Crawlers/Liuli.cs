@@ -34,10 +34,28 @@ internal class Liuli
     private static readonly Regex ArticleIdRegex = new Regex(@".*?/wp/(\d+).*");
     private readonly LiuliArgs _args;
     private readonly string _authority;
-    private readonly HttpClient _client = new HttpClient();
+    private readonly HttpClient _client;
 
     public Liuli(LiuliArgs args)
     {
+        if (!string.IsNullOrEmpty(args.Proxy))
+        {
+            var proxy = new WebProxy
+            {
+                Address = new Uri(args.Proxy)
+            };
+            var handler = new HttpClientHandler
+            {
+                Proxy = proxy
+            };
+
+            _client = new HttpClient(handler: handler, disposeHandler: true);
+        }
+        else
+        {
+            _client = new HttpClient();
+        }
+
         _args = args;
         _authority = new Uri(_args.Url!).Authority;
     }

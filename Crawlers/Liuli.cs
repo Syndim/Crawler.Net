@@ -160,7 +160,7 @@ internal class Liuli
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Failed to get image: {e.Message}");
+                    Console.WriteLine($"Failed to get image({url}): {e.Message}");
                 }
             }
         }

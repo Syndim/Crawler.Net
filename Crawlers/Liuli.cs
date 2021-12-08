@@ -72,11 +72,12 @@ internal class Liuli
     private async void ProcessPageCrawlCompleted(object? sender, PageCrawlCompletedArgs args)
     {
         var page = args.CrawledPage;
-        Console.WriteLine($"Page crawled: {page.Uri}");
+        var pageUrl = page.Uri.ToString();
+        Console.WriteLine($"Page crawled: {pageUrl}");
 
         if (!TryGetArticleIdFromUrl(page.Uri, out int articleId))
         {
-            Console.WriteLine($"skip {page.Uri.ToString()}");
+            Console.WriteLine($"skip {pageUrl}");
             return;
         }
 
@@ -85,14 +86,14 @@ internal class Liuli
         var article = document.QuerySelector("#content article");
         if (article == null)
         {
-            Console.WriteLine("Failed to get article from page, skip");
+            Console.WriteLine($"Failed to get article from page, skip {pageUrl}");
             return;
         }
 
         var titleTag = article.QuerySelector("h1.entry-title");
         if (titleTag == null)
         {
-            Console.WriteLine("Failed to get title tag, skip");
+            Console.WriteLine($"Failed to get title tag, skip {pageUrl}");
             return;
         }
 
@@ -100,7 +101,7 @@ internal class Liuli
         var contentTag = article.QuerySelector("div.entry-content");
         if (contentTag == null)
         {
-            Console.WriteLine("Failed to get content tag, skip");
+            Console.WriteLine($"Failed to get content tag, skip {pageUrl}");
             return;
         }
 
@@ -108,7 +109,7 @@ internal class Liuli
         var indexFilePath = GetIndexFilePath(articleId);
         if (File.Exists(indexFilePath))
         {
-            Console.WriteLine("Already fetched, return");
+            Console.WriteLine($"Already fetched, return {pageUrl}");
             return;
         }
 
@@ -118,7 +119,7 @@ internal class Liuli
         var coverImgTag = contentTag.QuerySelector("img");
         if (coverImgTag == null)
         {
-            Console.WriteLine("Faild to get coverImgTag");
+            Console.WriteLine($"Faild to get coverImgTag {pageUrl}");
         }
 
         var imageTags = contentTag.QuerySelectorAll("img");
@@ -128,7 +129,7 @@ internal class Liuli
         Dictionary<string, string> images = new();
         if (imageTags == null)
         {
-            Console.WriteLine("No image found");
+            Console.WriteLine($"No image found {pageUrl}");
         }
         else
         {
@@ -137,7 +138,7 @@ internal class Liuli
                 var url = imageTag.GetAttribute("src");
                 if (string.IsNullOrEmpty(url))
                 {
-                    Console.WriteLine($"Invalid image url: {url}");
+                    Console.WriteLine($"Invalid image url: {url}, page {pageUrl}");
                     continue;
                 }
 
@@ -152,7 +153,7 @@ internal class Liuli
                         var fileInfo = new FileInfo(imgFilePath);
                         if (fileInfo.Length > 0)
                         {
-                            Console.WriteLine($"Image file already exists for url({url}): {fullFileName}, file size: {fileInfo.Length}");
+                            Console.WriteLine($"Image file already exists for url({url}): {fullFileName}, file size: {fileInfo.Length}, page url: {pageUrl}");
                             images.Add(url, fullFileName);
                             continue;
                         }
@@ -183,7 +184,7 @@ internal class Liuli
                 }
                 catch (HttpRequestException e)
                 {
-                    Console.WriteLine($"Failed to get image({url}) in {page.Uri.ToString()}: {e.Message}");
+                    Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
                     if (e.StatusCode != HttpStatusCode.NotFound)
                     {
                         networkErrorsOccured = true;
@@ -192,14 +193,14 @@ internal class Liuli
                 catch (Exception e)
                 {
                     networkErrorsOccured = true;
-                    Console.WriteLine($"Failed to get image({url}) in {page.Uri.ToString()}: {e.Message}");
+                    Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
                 }
             }
         }
 
         if (networkErrorsOccured)
         {
-            Console.WriteLine($"Has too many requests error, skipping further parsing {page.Uri.ToString()}");
+            Console.WriteLine($"Has network error, skipping further parsing {pageUrl}");
             return;
         }
 
@@ -233,6 +234,7 @@ internal class Liuli
         var outputFile = File.Create(indexFilePath);
         using var sw = new StreamWriter(outputFile);
         await sw.WriteAsync(jsonResult);
+        Console.WriteLine($"Index write done: {pageUrl}");
     }
 
     private CrawlDecision ShouldCrawlPageDecisionMaker(PageToCrawl page, CrawlContext context)

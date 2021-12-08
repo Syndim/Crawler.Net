@@ -200,6 +200,8 @@ internal class Liuli
                         images.Add(url, fullFileName);
                     }
 
+                    Console.WriteLine($"Image downloaded {url}: {fullFileName}");
+
                     if (isFirst)
                     {
                         cover = fullFileName;

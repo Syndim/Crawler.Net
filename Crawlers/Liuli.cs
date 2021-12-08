@@ -183,7 +183,7 @@ internal class Liuli
                 }
                 catch (HttpRequestException e)
                 {
-                    Console.WriteLine($"Failed to get image({url}): {e.Message}");
+                    Console.WriteLine($"Failed to get image({url}) in {page.Uri.ToString()}: {e.Message}");
                     if (e.StatusCode != HttpStatusCode.NotFound)
                     {
                         networkErrorsOccured = true;
@@ -192,7 +192,7 @@ internal class Liuli
                 catch (Exception e)
                 {
                     networkErrorsOccured = true;
-                    Console.WriteLine($"Failed to get image({url}): {e.Message}");
+                    Console.WriteLine($"Failed to get image({url}) in {page.Uri.ToString()}: {e.Message}");
                 }
             }
         }

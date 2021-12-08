@@ -140,6 +140,14 @@ internal class Liuli
 
                 try
                 {
+                    if (url.StartsWith("/"))
+                    {
+                        var urlBuilder = new UriBuilder(page.Uri);
+                        urlBuilder.Path = url;
+                        urlBuilder.Query = string.Empty;
+                        url = urlBuilder.Uri.ToString();
+                    }
+
                     var stream = await _client.GetStreamAsync(url);
                     var extension = Path.GetExtension(url);
                     var fileName = CreateMD5Hash(url);

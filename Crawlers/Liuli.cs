@@ -159,6 +159,12 @@ internal class Liuli
                         }
                     }
 
+                    if (images.ContainsKey(url))
+                    {
+                        Console.WriteLine($"Already downloaded for url({url}), page url: {pageUrl}");
+                        continue;
+                    }
+
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     if (url.StartsWith("/"))
                     {

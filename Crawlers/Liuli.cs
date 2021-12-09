@@ -225,7 +225,12 @@ internal class Liuli
                 catch (Exception e)
                 {
                     networkErrorsOccured = true;
-                    Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
+                    Exception? ex = e;
+                    while (ex != null)
+                    {
+                        Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
+                        ex = ex.InnerException;
+                    }
                 }
             }
         }

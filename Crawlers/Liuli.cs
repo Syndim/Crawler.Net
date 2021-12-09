@@ -218,7 +218,7 @@ internal class Liuli
                     Exception? ex = e;
                     while (ex != null)
                     {
-                        Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
+                        Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.GetType().ToString()} {e.Message}");
                         ex = ex.InnerException;
                     }
                 }
@@ -228,7 +228,7 @@ internal class Liuli
                     Exception? ex = e;
                     while (ex != null)
                     {
-                        Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
+                        Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.GetType().ToString()} {e.Message}");
                         ex = ex.InnerException;
                     }
                 }

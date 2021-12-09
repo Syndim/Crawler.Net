@@ -210,10 +210,16 @@ internal class Liuli
                 }
                 catch (HttpRequestException e)
                 {
-                    Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
                     if (e.StatusCode != HttpStatusCode.NotFound && !(e.StatusCode == HttpStatusCode.ServiceUnavailable && !string.IsNullOrEmpty(_args.Proxy)))
                     {
                         networkErrorsOccured = true;
+                    }
+ 
+                    Exception ex = e;
+                    while (ex != null)
+                    {
+                        Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
+                        ex = ex.InnerException;
                     }
                 }
                 catch (Exception e)
@@ -231,6 +237,12 @@ internal class Liuli
         }
 
         var dateElement = document.QuerySelector("time.entry-date");
+        if (dateElement == null)
+        {
+            Console.WriteLine($"Failed to get date element: {pageUrl}");
+            return;
+        }
+
         var date = dateElement.GetAttribute("datetime");
 
         var categoryElement = document.QuerySelector("*[rel='category tag']");

@@ -210,7 +210,9 @@ internal class Liuli
                 }
                 catch (HttpRequestException e)
                 {
-                    if (e.StatusCode != HttpStatusCode.NotFound && !(e.StatusCode == HttpStatusCode.ServiceUnavailable && !string.IsNullOrEmpty(_args.Proxy)))
+                    if (e.StatusCode != HttpStatusCode.NotFound
+                            && e.StatusCode != HttpStatusCode.Forbidden
+                            && !(e.StatusCode == HttpStatusCode.ServiceUnavailable && !string.IsNullOrEmpty(_args.Proxy)))
                     {
                         networkErrorsOccured = true;
                     }

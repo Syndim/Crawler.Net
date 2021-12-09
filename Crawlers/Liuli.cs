@@ -212,6 +212,7 @@ internal class Liuli
                 {
                     if (e.StatusCode != HttpStatusCode.NotFound
                             && e.StatusCode != HttpStatusCode.Forbidden
+                            && !e.Message.Contains("The SSL connection could not be established, see inner exception")
                             && !(e.StatusCode == HttpStatusCode.ServiceUnavailable && !string.IsNullOrEmpty(_args.Proxy)))
                     {
                         networkErrorsOccured = true;

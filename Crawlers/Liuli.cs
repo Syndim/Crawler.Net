@@ -200,7 +200,7 @@ internal class Liuli
                         images.Add(url, fullFileName);
                     }
 
-                    Console.WriteLine($"Image downloaded {url}: {fullFileName}");
+                    Console.WriteLine($"Image downloaded {pageUrl}, {url}: {fullFileName}");
 
                     if (isFirst)
                     {
@@ -215,7 +215,7 @@ internal class Liuli
                         networkErrorsOccured = true;
                     }
  
-                    Exception ex = e;
+                    Exception? ex = e;
                     while (ex != null)
                     {
                         Console.WriteLine($"Failed to get image({url}) in {pageUrl}: {e.Message}");
@@ -246,6 +246,12 @@ internal class Liuli
         var date = dateElement.GetAttribute("datetime");
 
         var categoryElement = document.QuerySelector("*[rel='category tag']");
+        if (categoryElement == null)
+        {
+            Console.WriteLine($"Failed to get category element: {pageUrl}");
+            return;
+        }
+
         var category = categoryElement.TextContent;
 
         var tagElements = document.QuerySelectorAll("*[rel='tag']");

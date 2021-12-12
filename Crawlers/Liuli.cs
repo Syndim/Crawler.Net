@@ -325,7 +325,7 @@ internal class Liuli
         {
             if (File.Exists(GetIndexFilePath(articleId)))
             {
-                return new CrawlDecision { Allow = false, Reason = "Already crawlered" };
+                return new CrawlDecision { Allow = false, Reason = "Already crawled" };
             }
         }
 

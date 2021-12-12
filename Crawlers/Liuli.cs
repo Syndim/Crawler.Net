@@ -65,7 +65,8 @@ internal class Liuli
         Directory.CreateDirectory(_args.Path!);
         var config = new CrawlConfiguration
         {
-            MinCrawlDelayPerDomainMilliSeconds = 1000
+            MinCrawlDelayPerDomainMilliSeconds = 1000,
+             MaxPagesToCrawl = 0
         };
 
         var crawler = new PoliteWebCrawler(config);
